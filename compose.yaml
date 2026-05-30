@@ -24,19 +24,18 @@ services:
         depends_on:
             - pgsql
     scheduler:
-        build:
-            context: './vendor/laravel/sail/runtimes/8.5'
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
         image: 'sail-8.5/app'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            SUPERVISOR_PHP_USER: 'sail'
         volumes:
             - '.:/var/www/html'
         networks:
             - sail
         depends_on:
             - pgsql
-        command: /bin/sh -c "while true; do php artisan schedule:run --no-interaction; sleep 60; done"
+        command: ["/bin/sh", "-c", "while true; do php artisan schedule:run --no-interaction; sleep 60; done"]
     pgsql:
         image: 'postgres:18-alpine'
         ports:
