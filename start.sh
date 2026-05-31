@@ -2,8 +2,11 @@
 set -e
 
 export PORT=${PORT:-8080}
+echo "Starting on PORT=$PORT"
 
 envsubst '${PORT}' < /etc/nginx/default.conf.template > /etc/nginx/http.d/default.conf
+echo "Nginx config written:"
+cat /etc/nginx/http.d/default.conf
 
 echo "Waiting for database and running migrations..."
 for i in $(seq 1 15); do
@@ -22,4 +25,5 @@ php artisan view:cache
 
 php-fpm -D
 
+nginx -t
 exec nginx -g 'daemon off;'
