@@ -17,6 +17,8 @@ for i in $(seq 1 15); do
     sleep 3
 done
 
+php artisan db:seed --force
+
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
