@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(docker exec tall-demo-pgsql-1 psql -U sail -d laravel -c \"TRUNCATE reminders;\")"
+    ]
+  }
+}

@@ -27,6 +27,16 @@ class RemindModal extends Component
     {
         $this->validate();
 
+        $alreadyPending = Reminder::where('post_id', $this->postId)
+            ->where('email', $this->email)
+            ->whereNull('notified_at')
+            ->exists();
+
+        if ($alreadyPending) {
+            $this->addError('email', 'A reminder for this email is already pending for this event.');
+            return;
+        }
+
         Reminder::create([
             'post_id' => $this->postId,
             'email' => $this->email,
