@@ -13,7 +13,7 @@
 
     <header class="bg-white border-b border-gray-100 shadow-sm">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-            <span class="text-lg font-bold text-indigo-600 tracking-tight">TJR Events</span>
+            <a href="{{ url('/') }}" class="text-lg font-bold text-indigo-600 tracking-tight hover:text-indigo-800 transition-colors">TJR Events</a>
             <span class="text-xs text-gray-400">Demo App · TALL Stack</span>
         </div>
     </header>

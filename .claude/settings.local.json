@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(docker exec tall-demo-pgsql-1 psql -U sail -d laravel -c \"TRUNCATE reminders;\")"
+      "PowerShell(docker exec tall-demo-pgsql-1 psql -U sail -d laravel -c \"TRUNCATE reminders;\")",
+      "WebFetch(domain:www.newslight.com)",
+      "Bash(Start-Process \"C:\\\\Program Files\\\\Docker\\\\Docker\\\\Docker Desktop.exe\")",
+      "Bash(docker compose *)",
+      "Bash(docker exec *)",
+      "Bash(docker restart *)"
     ]
   }
 }

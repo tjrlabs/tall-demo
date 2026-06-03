@@ -2,14 +2,26 @@
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
 
+            {{-- Back link --}}
+            <a href="{{ url('/') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-indigo-600 mb-6 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                All Events
+            </a>
+
             {{-- Event banner --}}
             <div class="mb-6 flex items-center gap-3 px-5 py-3 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-800 text-sm font-medium">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span>
-                    Event starts: <strong>{{ $post->event_at->format('l, F j · g:i A') }}</strong>
-                    <span class="text-indigo-500 ml-2">({{ $post->event_at->diffForHumans() }})</span>
+                    @if ($post->event_at)
+                        Event starts: <strong>{{ $post->event_at->format('l, F j · g:i A') }}</strong>
+                        <span class="text-indigo-500 ml-2">({{ $post->event_at->diffForHumans() }})</span>
+                    @else
+                        Event date to be announced
+                    @endif
                 </span>
             </div>
 
@@ -46,7 +58,9 @@
                             </div>
                             <div>
                                 <p class="font-medium text-gray-700">TJR Events</p>
-                                <p>{{ $post->event_at->format('M j, Y') }}</p>
+                                @if ($post->event_at)
+                                    <p>{{ $post->event_at->format('M j, Y') }}</p>
+                                @endif
                             </div>
                         </div>
 
