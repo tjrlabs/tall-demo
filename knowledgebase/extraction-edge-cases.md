@@ -110,9 +110,9 @@ Edge cases where Gemini may return a wrong, inconsistent, or null `event_at`.
 **Risk:** Depends entirely on `{{today}}` being correct; no absolute date to fall back on  
 **Example:** "Join us this coming Thursday at 6:30 PM" — no explicit date  
 **Post:** [Post 19](https://tall-demo-production.up.railway.app/posts/19)  
-**Result:** `2026-06-12T18:30:00` *(previously `2026-06-04` — today shifted from June 3 to June 5)*  
-**Confidence:** 0.8 — relative date resolution, correct but fragile  
-**Verdict:** ✅ Correctly resolved "this coming Thursday" to June 12 (today is June 5) at 6:30 PM. Will silently break if `{{today}}` ever drifts.
+**Result:** `2026-06-11T18:30:00`  
+**Confidence:** 0.7  
+**Verdict:** ✅ Correctly resolved "this coming Thursday" to June 11 (today is Friday, June 5) at 6:30 PM. Fixed by including the day name in `{{today}}` (e.g. "Friday, 2026-06-05") so the model doesn't have to calculate it.
 
 ---
 

@@ -23,7 +23,7 @@ class EventDateExtractor
 
         $prompt = str_replace(
             ['{{today}}', '{{body}}'],
-            [now()->format('Y-m-d'), $body],
+            [now()->format('l, Y-m-d'), $body],
             $template
         );
 
