@@ -11,8 +11,8 @@ confidence is a decimal from 0.0 to 1.0 reflecting how certain you are about the
 - 0.0: event_at is null
 
 Rules:
-- The time MUST be an explicit clock time stated in the text (e.g. "7:30 PM", "19:00", "8 o'clock"). Do NOT infer or guess a time from words like "evening", "morning", "afternoon", "late-night", "night", or similar.
-- If a date is present but no explicit clock time is stated, return {"event_at":null}.
+- The time MUST be an explicit clock time stated in the text (e.g. "7:30 PM", "19:00", "8 o'clock"). Do NOT infer or guess a time from words like "evening", "morning", "afternoon", "late-night", "night", or similar — if the only time reference is a vague word like these, return {"event_at":null}.
+- If a date is present but no time is mentioned at all, use 00:00:00 (midnight) as the time.
 - If multiple dates are present, return the date of the main/primary event (e.g. the headlining act, the opening night, or the first occurrence).
 - If multiple times are present (e.g. doors and show time), return the time the main event or performance begins, not the doors-open time.
 - If the date has no year, infer the most likely upcoming year based on today's date.

@@ -11,7 +11,7 @@ Edge cases where Gemini may return a wrong, inconsistent, or null `event_at`.
 **Example:** Post has a VIP night July 10 and a public event July 11 — which one is "the event"?  
 **Post:** [Post 9](https://tall-demo-production.up.railway.app/posts/9)  
 **Result:** `2026-07-10T18:00:00`  
-**Confidence:** 1.0 — model was certain about the date it picked, even if the choice is debatable  
+**Confidence:** 1.0  
 **Verdict:** ⚠️ Picked the first date (VIP night) rather than the main public event. Defensible but inconsistent.
 
 ---
@@ -28,20 +28,20 @@ Edge cases where Gemini may return a wrong, inconsistent, or null `event_at`.
 
 ### EC-3 · Date range (closure)
 **Risk:** Model returns start or end of a range instead of null  
-**Example:** "Closed July 6 through July 19" — there is no event start time  
+**Example:** "Closed July 6 through July 19" — there is no explicit clock time  
 **Post:** [Post 11](https://tall-demo-production.up.railway.app/posts/11)  
-**Result:** `null`  
-**Confidence:** 0.0  
-**Verdict:** ✅ Correctly returned null — a closure has no event start.
+**Result:** `2026-07-06T00:00:00` *(previously `null` — rule changed)*  
+**Confidence:** 0.95  
+**Verdict:** ✅ Correctly applied new rule: date present, no clock time → midnight. Picked start of range (July 6).
 
 ---
 
 ### EC-4 · Event date already in the past
 **Risk:** Model returns the past date, making the reminder useless  
-**Example:** Post says "Gala held on May 9, 2026" — today is June 3  
+**Example:** Post says "Gala held on May 9, 2026" — today is June 5  
 **Post:** [Post 12](https://tall-demo-production.up.railway.app/posts/12)  
 **Result:** `2026-05-09T18:00:00`  
-**Confidence:** 1.0 — model extracted it correctly, it's the app logic that should reject past dates  
+**Confidence:** 1.0  
 **Verdict:** ⚠️ Technically correct extraction, but past events should return null for a reminder app.
 
 ---
@@ -50,9 +50,9 @@ Edge cases where Gemini may return a wrong, inconsistent, or null `event_at`.
 **Risk:** Model invents a time (midnight, noon) rather than returning null  
 **Example:** "Farmers Market opens June 20" — no clock time mentioned  
 **Post:** [Post 13](https://tall-demo-production.up.railway.app/posts/13)  
-**Result:** `null`  
-**Confidence:** 0.0  
-**Verdict:** ✅ Correctly returned null per prompt rule: no explicit clock time = null.
+**Result:** `2026-06-20T00:00:00` *(previously `null` — rule changed)*  
+**Confidence:** 0.9  
+**Verdict:** ✅ Correctly applied new rule: date present, no clock time → midnight.
 
 ---
 
@@ -82,7 +82,7 @@ Edge cases where Gemini may return a wrong, inconsistent, or null `event_at`.
 **Post:** [Post 16](https://tall-demo-production.up.railway.app/posts/16)  
 **Result:** `null`  
 **Confidence:** 0.0  
-**Verdict:** ✅ Correctly returned null — prompt rule enforced, "evening" is not a clock time.
+**Verdict:** ✅ Correctly returned null — vague time word ("evening") with a date still returns null per prompt rule.
 
 ---
 
@@ -110,9 +110,9 @@ Edge cases where Gemini may return a wrong, inconsistent, or null `event_at`.
 **Risk:** Depends entirely on `{{today}}` being correct; no absolute date to fall back on  
 **Example:** "Join us this coming Thursday at 6:30 PM" — no explicit date  
 **Post:** [Post 19](https://tall-demo-production.up.railway.app/posts/19)  
-**Result:** `2026-06-04T18:30:00`  
-**Confidence:** 0.6 — relative date resolution, correct but fragile  
-**Verdict:** ✅ Correctly resolved "this coming Thursday" to June 4 (today is June 3) at 6:30 PM. Works now, but will silently break if `{{today}}` ever drifts.
+**Result:** `2026-06-12T18:30:00` *(previously `2026-06-04` — today shifted from June 3 to June 5)*  
+**Confidence:** 0.8 — relative date resolution, correct but fragile  
+**Verdict:** ✅ Correctly resolved "this coming Thursday" to June 12 (today is June 5) at 6:30 PM. Will silently break if `{{today}}` ever drifts.
 
 ---
 
@@ -130,9 +130,9 @@ Edge cases where Gemini may return a wrong, inconsistent, or null `event_at`.
 **Risk:** Model picks one event arbitrarily with no clear rule  
 **Example:** "Secondary Stage July 24 at 5 PM; Main Stage headliner July 25 at 8 PM"  
 **Post:** [Post 21](https://tall-demo-production.up.railway.app/posts/21)  
-**Result:** `2026-07-24T17:00:00`  
-**Confidence:** 1.0 — certain about what it picked, but picked the wrong one  
-**Verdict:** ⚠️ Picked the opening night (July 24) rather than the headliner (July 25 at 8 PM). First-event bias — not necessarily what a user would consider "the event".
+**Result:** `2026-07-25T20:00:00` *(previously `2026-07-24T17:00:00` — now picks headliner)*  
+**Confidence:** 1.0  
+**Verdict:** ✅ Now correctly picks the headliner (July 25 at 8 PM) over the opening act. Previously ⚠️ — model improved between runs.
 
 ---
 
@@ -151,7 +151,7 @@ Edge cases where Gemini may return a wrong, inconsistent, or null `event_at`.
 **Example:** "Departing from 302 Royal Ave… homes built as far back as 1893… call 604-527-4640"  
 **Post:** [Post 23](https://tall-demo-production.up.railway.app/posts/23)  
 **Result:** `2026-09-12T10:00:00`  
-**Confidence:** 0.9 — year inferred  
+**Confidence:** 0.8 — year inferred  
 **Verdict:** ✅ Correctly extracted Sept 12 at 10 AM, ignored 302, 1893, 1905, and the phone number.
 
 ---
@@ -171,8 +171,8 @@ Edge cases where Gemini may return a wrong, inconsistent, or null `event_at`.
 **Example:** "Session begins at 6:00" — sunrise yoga, should be AM not PM  
 **Post:** [Post 25](https://tall-demo-production.up.railway.app/posts/25)  
 **Result:** `2026-07-12T06:00:00`  
-**Confidence:** 0.9 — AM/PM inferred from context, not stated  
-**Verdict:** ✅ Correctly inferred 6:00 AM from context ("Sunrise Yoga", "arrive by 5:45"). Context-aware reasoning worked here.
+**Confidence:** 1.0 *(previously 0.9 — model now more certain from context)*  
+**Verdict:** ✅ Correctly inferred 6:00 AM from context ("Sunrise Yoga", "arrive by 5:45").
 
 ---
 
