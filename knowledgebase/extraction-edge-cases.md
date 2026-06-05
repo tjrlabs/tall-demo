@@ -183,3 +183,4 @@ Edge cases where Gemini may return a wrong, inconsistent, or null `event_at`.
 **Result:** `null`  
 **Confidence:** 0.0  
 **Verdict:** ✅ Correctly returned null — no date hallucinated.
+
